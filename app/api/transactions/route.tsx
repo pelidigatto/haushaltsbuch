@@ -11,7 +11,6 @@ export async function POST(req: Request) {
   // JSON-Body parsen
   const { amount, category, type,description  } = await req.json();
 
-console.log(amount, category, type,description);
 
   const amountNumber = parseFloat(amount);
 
@@ -20,7 +19,10 @@ console.log(amount, category, type,description);
       data: { amount: amountNumber, category, type,description  },
     });
     return NextResponse.json(transaction, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ error: 'Fehler beim Hinzufügen', details: error.toString() }, { status: 500 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: 'Fehler beim Hinzufügen', details: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: 'Unbekannter Fehler' }, { status: 500 });
   }
 }
